@@ -1,0 +1,24 @@
+---
+- name: "Get Helm installer"
+  unarchive:  
+    src: '{{ helm_download_url }}'
+    dest: '{{ tmp_dir }}'
+    remote_src: yes
+
+- name: Create helm cli install dir
+  file:
+    path: '{{helm_cli_path}}'
+    state: directory
+    
+- name: "Copy Helm executable"
+  copy:
+    src: '{{ tmp_dir }}/linux-amd64/helm' 
+    dest: '{{helm_cli_path}}' 
+    mode: 0755
+
+- name: Add stable repo
+  shell: '{{helm_cli_path}}/helm repo add stable https://kubernetes-charts.storage.googleapis.com'
+
+- name: "Update Helm repo"
+  shell: "{{helm_cli_path}}/helm repo update"  # Shell instead of command for getting all the paths
+

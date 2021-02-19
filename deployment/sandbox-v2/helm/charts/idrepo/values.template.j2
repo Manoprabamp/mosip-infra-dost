@@ -1,0 +1,59 @@
+namespace: default
+component: idrepo
+part-of: mosip
+activeProfileEnv: mz 
+springConfigLabel: master
+configServerUrl: http://config-server/config
+ingress:
+   namespace: default
+artifactoryUrl: {{ artifactory_url }} 
+probe:
+  initialDelay: 60  # Seconds
+  period: 30 # Seconds
+imagePullPolicy: Always
+domainName: {{ sandbox_domain_name }}
+internalDomain: {{ clusters.mz.nodeport_node }} 
+isGlowroot: {{ is_glowroot }} 
+services:
+  identity:
+    serviceName: {{ versions.services.idrepo.identity.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.identity.values()[0] }}
+    serviceName: idrepo-identity-service
+    containerPort: 8090
+    servicePort: 80
+    ingressPath: /idrepository/v1/identity 
+    healthUrl: /idrepository/v1/identity/actuator/health
+  vid: 
+    serviceName: {{ versions.services.idrepo.vid.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.vid.values()[0] }}
+    containerPort: 8091
+    servicePort: 80
+    ingressPath: /idrepository/v1/vid
+    healthUrl: /idrepository/v1/actuator/health # TODO: Check this url. It does not have /vid
+
+generators:
+  uinhash:  
+    name: {{ versions.services.idrepo.uinhash.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.uinhash.values()[0] }}
+    table: mosip.idrepo.identity.db.shard.uinHashTable
+    db_alias: mosip.idrepo.identity.db.shard
+    schema: mosip.idrepo.identity.db.shard.schema  
+  uinencrypt:
+    name: {{ versions.services.idrepo.uinencrypt.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.uinencrypt.values()[0] }}
+    table: mosip.idrepo.identity.db.shard.uinEncryptTable 
+    db_alias: mosip.idrepo.identity.db.shard 
+    schema_name: mosip.idrepo.identity.db.shard.schema 
+  vidhash:
+    name: {{ versions.services.idrepo.vidhash.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.vidhash.values()[0] }}
+    table: mosip.idrepo.vid.db.uinHashTable
+    db_alias: mosip.idrepo.vid.db 
+    schema: mosip.idrepo.vid.db.schema
+  videncrypt:
+    name: {{ versions.services.idrepo.videncrypt.keys()[0] }} 
+    dockerImage: {{ versions.services.idrepo.videncrypt.values()[0] }}
+    table: mosip.idrepo.vid.db.uinEncryptTable 
+    db_alias: mosip.idrepo.vid.db 
+    schema: mosip.idrepo.vid.db.schema 
+

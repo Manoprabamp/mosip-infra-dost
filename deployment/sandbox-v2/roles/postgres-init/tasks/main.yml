@@ -1,0 +1,11 @@
+---
+# This script runs all the init SQL queries and populates all tables with
+# test data 
+# TODO: Init should not happen if Postgres has valuable data
+
+- include: init_db.yml
+  vars:
+    pg_db_name: '{{item.key}}'
+    pg_sql_path: '{{item.value.sql_path}}'
+  with_items: '{{databases | dict2items}}'
+        

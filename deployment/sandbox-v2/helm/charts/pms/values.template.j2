@@ -1,0 +1,45 @@
+namespace: default
+component: pms
+part-of: mosip
+activeProfileEnv: mz 
+springConfigLabel: master
+configServerUrl: http://config-server/config
+ingress:
+   namespace: default
+artifactoryUrl: {{ artifactory_url }} 
+probe:
+  initialDelay: 30  # Seconds
+  period: 30 # Seconds
+imagePullPolicy: Always
+domainName: {{ sandbox_domain_name }}
+internalDomain: {{ clusters.mz.nodeport_node }} 
+isGlowroot: {{ is_glowroot }} 
+services:
+  misp: 
+    serviceName: {{ versions.services.pms.misp.keys()[0] }} 
+    dockerImage: {{ versions.services.pms.misp.values()[0] }}
+    containerPort: 9100
+    servicePort: 80
+    ingressPath: /partnermanagement/v1/misps
+    healthUrl: /partnermanagement/v1/misps/actuator/health
+  pm:
+    serviceName: {{ versions.services.pms.pm.keys()[0] }} 
+    dockerImage: {{ versions.services.pms.pm.values()[0] }}
+    containerPort: 9102
+    servicePort: 80
+    ingressPath: /partnermanagement/v1/pmpartners
+    healthUrl: /partnermanagement/v1/pmpartners/actuator/health
+  partner:
+    serviceName: {{ versions.services.pms.partner.keys()[0] }} 
+    dockerImage: {{ versions.services.pms.partner.values()[0] }}
+    containerPort: 9103
+    servicePort: 80
+    ingressPath: /partnermanagement/v1/partners
+    healthUrl: /partnermanagement/v1/partners/actuator/health
+  policy:
+    serviceName: {{ versions.services.pms.policy.keys()[0] }} 
+    dockerImage: {{ versions.services.pms.policy.values()[0] }}
+    containerPort: 9101
+    servicePort: 80
+    ingressPath: /partnermanagement/v1/policies
+    healthUrl: /partnermanagement/v1/policies/actuator/health

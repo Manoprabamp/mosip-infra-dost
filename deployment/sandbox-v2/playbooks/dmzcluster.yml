@@ -1,0 +1,21 @@
+# DMZ cluster
+- import_playbook: cluster.yml
+  vars:
+    cluster: dmzcluster
+    master: dmzmaster.sb
+    workers: dmzworkers
+
+# Ingress nginx controller
+- import_playbook: ingress-nginx.yml
+  vars:
+    kube_config: '{{clusters.dmz.kube_config}}' 
+    ingress_nginx_namespace: '{{clusters.dmz.ingress.namespace}}'
+
+# Kubernetes dashboard
+- hosts: console
+  vars:
+    kube_config: '{{clusters.dmz.kube_config}}' 
+    cluster_name: 'dmz'
+    dashboard_conf: '{{clusters.dmz.dashboard}}'
+  roles:
+    - {role: k8scluster/dashboard}
